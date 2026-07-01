@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ciem-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ciem
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "55432:5432"
+    volumes:
+      - ciem-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ciem"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: ciem-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      API_PREFIX: api
+      FRONTEND_URL: http://localhost:55173,http://frontend:5173
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/ciem
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ciem
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "54000:4000"
+    volumes:
+      - ./backend:/app
+      - ciem-backend-node-modules:/app/node_modules
+    command: node --watch --require ts-node/register --require tsconfig-paths/register src/main.ts
+
+  frontend:
+    build:
+      context: ./CIEM
+    container_name: ciem-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE_URL: http://localhost:54000/api/v1
+    ports:
+      - "55173:5173"
+    volumes:
+      - ./CIEM:/app
+      - ciem-frontend-node-modules:/app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  ciem-postgres-data:
+  ciem-backend-node-modules:
+  ciem-frontend-node-modules:

@@ -1,0 +1,17 @@
+{
+  "name": "ciem-front-back",
+  "version": "1.0.0",
+  "description": "Workspace scripts for CIEM frontend and backend",
+  "private": true,
+  "scripts": {
+    "dev:front": "npm run dev --prefix CIEM",
+    "dev:back": "npm run start:dev --prefix backend",
+    "build:front": "npm run build --prefix CIEM",
+    "build:back": "npm run build --prefix backend",
+    "build": "npm run build:front && npm run build:back"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
