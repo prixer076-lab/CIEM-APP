@@ -13,7 +13,15 @@ type ApiRequestOptions = {
   headers?: Record<string, string>
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api/v1'
+function normalizeApiBaseUrl(value?: string) {
+  const fallback = 'http://localhost:4000/api/v1'
+  const baseUrl = value?.trim() || fallback
+  const cleanBaseUrl = baseUrl.replace(/\/+$/, '')
+
+  return cleanBaseUrl.endsWith('/api/v1') ? cleanBaseUrl : `${cleanBaseUrl}/api/v1`
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL)
 
 export class ApiError extends Error {
   readonly status?: number
