@@ -7,4 +7,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: '0.0.0.0',
+    allowedHosts: [
+      '.sslip.io',
+      'pierociem-ciemmonorepo-zrt1ty-11e1ec-5-189-131-197.sslip.io',
+      'pierociem-ciemmonorepo-zrt1ty-a56b73-5-189-131-197.sslip.io',
+    ],
+  },
 })
